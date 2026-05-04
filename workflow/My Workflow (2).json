@@ -1,0 +1,179 @@
+{
+  "name": "My Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        -176
+      ],
+      "id": "540e1f39-b225-45b5-a56e-55c6fe384fc2",
+      "name": "Telegram Trigger",
+      "webhookId": "235d2d16-7915-47fd-a690-2054bf28e0e7",
+      "credentials": {
+        "telegramApi": {
+          "id": "hxTDGEUVUiMVYMca",
+          "name": "Telegram account 2774"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=# Role\nYou are an intelligent AI assistant that helps users via Telegram.\nYou are talking to {{ $json.message.from.first_name }}.\n\n# Behavior\nYou should:\n- Understand the user's intent clearly.\n- Choose the correct tool only when necessary.\n- Otherwise answer directly.\n\nAlways return plain text only. Do not use markdown formatting.\n\n# Available Tools & When to Use Them\n\n## 1. Google Gemini Chat Model\nUse for:\n- Normal conversations\n- Explanations\n- Creative writing\n- General knowledge answers\n\n## 2. SerpAPI\nUse for:\n- Real-time information from the web\n- News\n- Current events\n- Anything requiring recent data\n\nExample input:\n{\n \"q\": \"search query\"\n}\n\n## 3. Calculator\nUse for:\n- Arithmetic\n- Percentages\n- Unit conversions\n- Date or time differences\n\nOnly use if calculations are required.\n\n## 4. Wikipedia\nUse for:\n- Information about people\n- Companies\n- Historical topics\n\n## 5. Google Calendar\n\nUse this tool for managing calendar events.\n\n### Create Event\nUse when the user asks to:\n- schedule\n- create\n- add\n- book a meeting\n\nExtract:\nsummary → event name  \nstart → start date and time  \nend → end date and time  \n\nRules:\n- If end time is missing, make the event 30 minutes long.\n- Use the user message as description if none is provided.\n\nExample user messages:\n\"Schedule a meeting tomorrow at 3 PM called AI Project Discussion\"\n\"Create a meeting next Monday at 10 AM called Team Sync\"\n\n### Update Event\nUse when the user asks to:\n- change\n- update\n- reschedule\n- modify an event\n\nYou must:\n- find the event using its name\n- update the provided fields (time, date, title, description)\n\nExample user messages:\n\"Move my AI Project Discussion meeting to 4 PM tomorrow\"\n\"Change Team Sync meeting to Friday\"\n\n### Delete Event\nUse when the user asks to:\n- cancel\n- delete\n- remove an event\n\nYou must:\n- identify the event by its name\n- delete it from the calendar\n\nExample user messages:\n\"Cancel my AI Project Discussion meeting\"\n\"Delete the Team Sync meeting\"\n\nAlways execute the Google Calendar tool when enough information is available.\nDo not ask for confirmation unless required."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        752,
+        -176
+      ],
+      "id": "09e31903-3082-40bd-9ecb-ae494bd92254",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "mistral-medium",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        624,
+        32
+      ],
+      "id": "3bfc2cd6-af59-4416-ad64-f30080bb42d9",
+      "name": "Mistral Cloud Chat Model",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "55B98myznuFbiHol",
+          "name": "Mistral Cloud account 602"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        128
+      ],
+      "id": "10219253-3bad-4656-9687-9c4985fb79c3",
+      "name": "SerpAPI"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        176
+      ],
+      "id": "8b23ba23-3638-4caa-bc86-c457ae441a84",
+      "name": "Google Docs"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        1184,
+        112
+      ],
+      "id": "810bc182-97bd-4169-b880-34045ad54761",
+      "name": "Google Calender"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Mistral Cloud Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calender": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "d3227f4a-8714-491f-aef2-61d3baee7501",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "969257b09ad2942bbaff2e2288304f4969030574d109cdeca05bf11f630884df"
+  },
+  "id": "ImI5lItS4o65F0YE",
+  "tags": []
+}
